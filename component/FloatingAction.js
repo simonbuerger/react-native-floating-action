@@ -274,9 +274,9 @@ class FloatingAction extends Component {
       bottom: this.mainBottomAnimation // I need to imporove this to run on native thread and not on JS thread
     };
 
-    if (['left', 'right'].indexOf(position) > -1) {
-      propStyles[position] = distanceToEdge;
-    }
+    // if (['left', 'right'].indexOf(position) > -1) {
+    //   propStyles[position] = distanceToEdge;
+    // }
 
     return (
       <Animated.View
