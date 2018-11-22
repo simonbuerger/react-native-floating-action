@@ -29,7 +29,7 @@ class FloatingAction extends Component {
       keyboardHeight: 0
     };
 
-    this.mainBottomAnimation = new Animated.Value(props.distanceToEdge);
+    this.mainBottomAnimation = new Animated.Value(props.distanceToBottom);
     this.actionsBottomAnimation = new Animated.Value(ACTION_BUTTON_SIZE + props.distanceToEdge + props.actionsPaddingTopBottom);
     this.animation = new Animated.Value(0);
     this.actionsAnimation = new Animated.Value(0);
@@ -80,6 +80,20 @@ class FloatingAction extends Component {
       this.keyboardWillHideListener.remove();
     }
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.distanceToBottom !== this.props.distanceToBottom) {
+      Animated.spring(
+        this.mainBottomAnimation,
+        {
+          bounciness: 0,
+          toValue: nextProps.distanceToBottom,
+          duration: 250,
+          useNativeDriver: true,
+        }
+      ).start();
+    }
+}
 
   onKeyboardShow = (e) => {
     const { distanceToEdge, actionsPaddingTopBottom } = this.props;
@@ -246,12 +260,17 @@ class FloatingAction extends Component {
         rotate: this.visibleAnimation.interpolate({
           inputRange: [0, 1],
           outputRange: ['0deg', '90deg']
-        })
+        }),
       }, {
         scale: this.visibleAnimation.interpolate({
           inputRange: [0, 1],
           outputRange: [1, 0]
         })
+      }, {
+        translateY: this.mainBottomAnimation.interpolate({
+          inputRange: [0, 1000],
+          outputRange: [0, -1000]
+        }),
       }]
     };
 
@@ -271,12 +290,12 @@ class FloatingAction extends Component {
     const Touchable = getTouchableComponent();
     const propStyles = {
       backgroundColor: mainButtonColor,
-      bottom: this.mainBottomAnimation // I need to imporove this to run on native thread and not on JS thread
+      bottom: 0,
     };
 
-    // if (['left', 'right'].indexOf(position) > -1) {
-    //   propStyles[position] = distanceToEdge;
-    // }
+    if (['left', 'right'].indexOf(position) > -1) {
+      propStyles[position] = 30;
+    }
 
     return (
       <Animated.View
@@ -325,7 +344,13 @@ class FloatingAction extends Component {
       opacity: this.actionsAnimation.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1]
-      })
+      }),
+      transform: [{
+        translateY: this.mainBottomAnimation.interpolate({
+          inputRange: [0, 1000],
+          outputRange: [0 - ACTION_BUTTON_SIZE - this.props.actionsPaddingTopBottom, - 1000 + ACTION_BUTTON_SIZE + this.props.actionsPaddingTopBottom]
+        }),
+      }],
     };
 
     const actionsStyles = [
@@ -333,7 +358,7 @@ class FloatingAction extends Component {
       styles[`${position}Actions`],
       animatedActionsStyle,
       {
-        bottom: this.actionsBottomAnimation
+        bottom: 0,
       }
     ];
 
