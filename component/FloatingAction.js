@@ -30,7 +30,7 @@ class FloatingAction extends Component {
     };
 
     this.mainBottomAnimation = new Animated.Value(props.distanceToBottom);
-    this.actionsBottomAnimation = new Animated.Value(ACTION_BUTTON_SIZE + props.distanceToEdge + props.actionsPaddingTopBottom);
+    this.actionsBottomAnimation = new Animated.Value(ACTION_BUTTON_SIZE + props.distanceToBottom + props.actionsPaddingTopBottom);
     this.animation = new Animated.Value(0);
     this.actionsAnimation = new Animated.Value(0);
     this.visibleAnimation = new Animated.Value(props.visible ? 0 : 1);
@@ -89,14 +89,13 @@ class FloatingAction extends Component {
           bounciness: 0,
           toValue: nextProps.distanceToBottom,
           duration: 250,
-          useNativeDriver: true,
         }
       ).start();
     }
 }
 
   onKeyboardShow = (e) => {
-    const { distanceToEdge, actionsPaddingTopBottom } = this.props;
+    const { distanceToEdge, actionsPaddingTopBottom, distanceToBottom } = this.props;
     const { height } = e.endCoordinates;
 
     Animated.parallel([
@@ -104,39 +103,39 @@ class FloatingAction extends Component {
         this.actionsBottomAnimation,
         {
           bounciness: 0,
-          toValue: (ACTION_BUTTON_SIZE + distanceToEdge + actionsPaddingTopBottom + height) - (isIphoneX() ? 40 : 0),
-          duration: 250
+          toValue: (ACTION_BUTTON_SIZE + distanceToBottom + actionsPaddingTopBottom + height) - (isIphoneX() ? 40 : 0),
+          duration: 250,
         }
       ),
       Animated.spring(
         this.mainBottomAnimation,
         {
           bounciness: 0,
-          toValue: (distanceToEdge + height) - (isIphoneX() ? 40 : 0),
-          duration: 250
+          toValue: (distanceToBottom + height) - (isIphoneX() ? 40 : 0),
+          duration: 250,
         }
       )
     ]).start();
   };
 
   onKeyboardHideHide = () => {
-    const { distanceToEdge, actionsPaddingTopBottom } = this.props;
+    const { distanceToEdge, actionsPaddingTopBottom, distanceToBottom } = this.props;
 
     Animated.parallel([
       Animated.spring(
         this.actionsBottomAnimation,
         {
           bounciness: 0,
-          toValue: ACTION_BUTTON_SIZE + distanceToEdge + actionsPaddingTopBottom,
-          duration: 250
+          toValue: ACTION_BUTTON_SIZE + distanceToBottom + actionsPaddingTopBottom,
+          duration: 250,
         }
       ),
       Animated.spring(
         this.mainBottomAnimation,
         {
           bounciness: 0,
-          toValue: distanceToEdge,
-          duration: 250
+          toValue: distanceToBottom,
+          duration: 250,
         }
       )
     ]).start();
